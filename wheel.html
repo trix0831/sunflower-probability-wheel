@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability Wheel with Names and Probabilities</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #startPage, #wheelPage {
+            display: none;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #wheelContainer {
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+            position: relative;
+        }
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="startPage">
+            <h1>Probability Wheel</h1>
+            <div class="options">
+                <button onclick="showWheel(0)">Option 1</button>
+                <button onclick="showWheel(1)">Option 2</button>
+                <button onclick="showWheel(2)">Option 3</button>
+                <button onclick="showWheel(3)">Option 4</button>
+                <button onclick="showWheel(4)">Option 5</button>
+                <button onclick="showWheel(5)">Option 6</button>
+                <button onclick="showWheel(6)">Option 7</button>
+                <button onclick="showWheel(7)">Option 8</button>
+            </div>
+        </div>
+        <div id="wheelPage">
+            <h2>Wheel of Probability</h2>
+            <div id="wheelContainer">
+                <canvas id="wheelCanvas"></canvas>
+            </div>
+            <button onclick="spinWheel()">Spin</button>
+            <button onclick="showStartPage()">Back to Start</button>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        Chart.register(ChartDataLabels);
+        const options = [
+            { name: 'Option 1', probabilities: [
+                {name: 'A', value: 50},
+                {name: 'B', value: 20},
+                {name: 'C', value: 10},
+                {name: 'D', value: 10},
+                {name: 'E', value: 10}
+            ]},
+            { name: 'Option 2', probabilities: [
+                {name: 'X', value: 40},
+                {name: 'Y', value: 30},
+                {name: 'Z', value: 30}
+            ]},
+            // Add similar structures for other options...
+        ];
+
+        let wheel;
+        let currentOption;
+        let isSpinning = false;
+
+        function showStartPage() {
+            document.getElementById('startPage').style.display = 'block';
+            document.getElementById('wheelPage').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function showWheel(optionIndex) {
+            document.getElementById('startPage').style.display = 'none';
+            document.getElementById('wheelPage').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            currentOption = options[optionIndex];
+            createWheel();
+        }
+
+        function createWheel() {
+            const ctx = document.getElementById('wheelCanvas').getContext('2d');
+            if (wheel) {
+                wheel.destroy();
+            }
+            wheel = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: currentOption.probabilities.map(p => `${p.name} (${p.value}%)`),
+                    datasets: [{
+                        data: currentOption.probabilities.map(p => p.value),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                        // Add this dataset for label colors
+                        labelColors: Array(currentOption.probabilities.length).fill('#fff')
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        datalabels: {
+                            color: (context) => {
+                                // Check if this is the winning index
+                                const winningIndex = context.chart.winningIndex;
+                                return winningIndex === context.dataIndex ? 'red' : '#fff'; // Change color based on winning index
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: 16
+                            },
+                            formatter: (value, ctx) => {
+                                const label = ctx.chart.data.labels[ctx.dataIndex];
+                                return label;
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+            });
+        }
+        
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+            document.getElementById('result').style.display = 'none';
+            
+            const spins = 5; // Number of full rotations
+            const duration = 5000; // Duration of spin in milliseconds
+            const startRotation = wheel.options.rotation || 0;
+            const endRotation = startRotation + (360 * spins) + Math.random() * 360;
+            
+            const startTime = Date.now();
+            
+            function frame() {
+                const now = Date.now();
+                const timeFraction = Math.min((now - startTime) / duration, 1);
+                const easedProgress = easeOutCubic(timeFraction);
+                
+                const currentRotation = startRotation + (endRotation - startRotation) * easedProgress;
+                wheel.options.rotation = currentRotation % 360;
+                wheel.update();
+                
+                if (timeFraction < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    isSpinning = false;
+                    showResult();
+                }
+            }
+            
+            requestAnimationFrame(frame);
+        }
+
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        function showResult() {
+            const randomValue = Math.random() * 100;
+            let cumulativeProbability = 0;
+            let winningIndex = 0;
+        
+            for (let i = 0; i < currentOption.probabilities.length; i++) {
+                cumulativeProbability += currentOption.probabilities[i].value;
+                if (randomValue <= cumulativeProbability) {
+                    winningIndex = i;
+                    break;
+                }
+            }
+        
+            const result = currentOption.probabilities[winningIndex];
+            document.getElementById('result').textContent = `Result: ${result.name} (${result.value}%)`;
+            document.getElementById('result').style.display = 'block';
+        
+            // Adjust the wheel to show the winning segment at the top
+            const dataPoints = wheel.getDatasetMeta(0).data;
+            const segmentMiddle = (dataPoints[winningIndex].startAngle + dataPoints[winningIndex].endAngle) / 2;
+            wheel.options.rotation = -segmentMiddle * 180 / Math.PI + 90;
+            
+            // Set the winning index for the datalabels plugin
+            wheel.winningIndex = winningIndex; // Add winning index to the chart object
+        
+            wheel.update();
+        }
+
+        showStartPage();
+    </script>
+</body>
+</html>
