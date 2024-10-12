@@ -15,7 +15,7 @@
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
-            padding: 10px; /* Added padding for smaller screens */
+            padding: 10px;
         }
         .container {
             text-align: center;
@@ -23,15 +23,15 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 100%; /* Make container responsive */
-            max-width: 400px; /* Limit max width */
+            width: 100%;
+            max-width: 400px;
         }
         #startPage, #wheelPage {
             display: none;
         }
         .options {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Responsive grid */
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 10px;
             margin-top: 20px;
         }
@@ -42,17 +42,17 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px; /* Adjusted font size */
+            font-size: 14px;
         }
         #wheelContainer {
             width: 100%;
-            height: auto; /* Make height auto to maintain aspect ratio */
-            aspect-ratio: 1; /* Maintain a square aspect ratio */
+            height: auto;
+            aspect-ratio: 1;
             margin: 20px auto;
             position: relative;
         }
         #result {
-            font-size: 20px; /* Slightly smaller font for mobile */
+            font-size: 20px;
             font-weight: bold;
             margin-top: 20px;
             padding: 10px;
@@ -78,7 +78,7 @@
             </div>
         </div>
         <div id="wheelPage">
-            <h2>Wheel of Probability</h2>
+            <h2>尋寶抽獎網</h2>
             <div id="wheelContainer">
                 <canvas id="wheelCanvas"></canvas>
             </div>
@@ -148,7 +148,6 @@
                 {name: '反派通用點', value: 10},
                 {name: '協助者通用點', value: 10}
             ]},
-
         ];
 
         let wheel;
@@ -203,23 +202,27 @@
             if (isSpinning) return;
             isSpinning = true;
             document.getElementById('result').style.display = 'none';
-            
+
+            // Reset colors before spinning
+            wheel.data.datasets[0].backgroundColor = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
+            wheel.update();
+
             const spins = 5; // Number of full rotations
             const duration = 5000; // Duration of spin in milliseconds
             const startRotation = wheel.options.rotation || 0;
             const endRotation = startRotation + (360 * spins) + Math.random() * 360;
-            
+
             const startTime = Date.now();
-            
+
             function frame() {
                 const now = Date.now();
                 const timeFraction = Math.min((now - startTime) / duration, 1);
                 const easedProgress = easeOutCubic(timeFraction);
-                
+
                 const currentRotation = startRotation + (endRotation - startRotation) * easedProgress;
                 wheel.options.rotation = currentRotation % 360;
                 wheel.update();
-                
+
                 if (timeFraction < 1) {
                     requestAnimationFrame(frame);
                 } else {
@@ -227,7 +230,7 @@
                     showResult();
                 }
             }
-            
+
             requestAnimationFrame(frame);
         }
 
@@ -239,7 +242,7 @@
             const randomValue = Math.random() * 100;
             let cumulativeProbability = 0;
             let winningIndex = 0;
-        
+
             for (let i = 0; i < currentOption.probabilities.length; i++) {
                 cumulativeProbability += currentOption.probabilities[i].value;
                 if (randomValue <= cumulativeProbability) {
@@ -247,15 +250,21 @@
                     break;
                 }
             }
-        
+
             const result = currentOption.probabilities[winningIndex];
             document.getElementById('result').textContent = `Result: ${result.name} (${result.value}%)`;
             document.getElementById('result').style.display = 'block';
-        
+
+            // Highlight the winning segment
+            wheel.data.datasets[0].backgroundColor = wheel.data.datasets[0].backgroundColor.map((color, index) => 
+                index === winningIndex ? 'red' : color // Set winning segment to red
+            );
+
             // Adjust the wheel to show the winning segment at the top
             const dataPoints = wheel.getDatasetMeta(0).data;
             const segmentMiddle = (dataPoints[winningIndex].startAngle + dataPoints[winningIndex].endAngle) / 2;
             wheel.options.rotation = -segmentMiddle * 180 / Math.PI + 90;
+
             wheel.update();
         }
 
