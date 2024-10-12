@@ -62,14 +62,14 @@
         <div id="startPage">
             <h1>Probability Wheel</h1>
             <div class="options">
-                <button onclick="showWheel(0)">Option 1</button>
-                <button onclick="showWheel(1)">Option 2</button>
-                <button onclick="showWheel(2)">Option 3</button>
-                <button onclick="showWheel(3)">Option 4</button>
-                <button onclick="showWheel(4)">Option 5</button>
-                <button onclick="showWheel(5)">Option 6</button>
-                <button onclick="showWheel(6)">Option 7</button>
-                <button onclick="showWheel(7)">Option 8</button>
+                <button onclick="showWheel(0)">柯南</button>
+                <button onclick="showWheel(1)">服部平次</button>
+                <button onclick="showWheel(2)">毛利蘭</button>
+                <button onclick="showWheel(3)">阿笠博士</button>
+                <button onclick="showWheel(4)">怪盜基德</button>
+                <button onclick="showWheel(5)">灰原哀</button>
+                <button onclick="showWheel(6)">毛利小五郎</button>
+                <button onclick="showWheel(7)">鈴木園子</button>
             </div>
         </div>
         <div id="wheelPage">
@@ -86,18 +86,64 @@
     <script>
         Chart.register(ChartDataLabels);
         const options = [
-            { name: 'Option 1', probabilities: [
-                {name: 'A', value: 50},
-                {name: 'B', value: 20},
-                {name: 'C', value: 10},
-                {name: 'D', value: 10},
-                {name: 'E', value: 10}
+            { name: '柯南', probabilities: [
+                {name: '手錶麻醉槍', value: 50},
+                {name: '偵探通用點', value: 20},
+                {name: '反派通用點', value: 10},
+                {name: '搞笑通用點', value: 10},
+                {name: '協助者通用點', value: 10}
             ]},
-            { name: 'Option 2', probabilities: [
-                {name: 'X', value: 40},
-                {name: 'Y', value: 30},
-                {name: 'Z', value: 30}
+
+            { name: '服部平次', probabilities: [
+                {name: '劍道竹刀', value: 50},
+                {name: '偵探通用點', value: 20},
+                {name: '反派通用點', value: 10},
+                {name: '搞笑通用點', value: 10},
+                {name: '協助者通用點', value: 10}
             ]},
+            { name: '毛利蘭', probabilities: [
+                {name: '空手道', value: 50},
+                {name: '協助者通用點', value: 20},
+                {name: '反派通用點', value: 10},
+                {name: '搞笑通用點', value: 10},
+                {name: '偵探通用點', value: 10}
+            ]},
+            { name: '阿笠博士', probabilities: [
+                {name: '發明的想法', value: 50},
+                {name: '協助者通用點', value: 20},
+                {name: '反派通用點', value: 10},
+                {name: '搞笑通用點', value: 10},
+                {name: '偵探通用點', value: 10}
+            ]},
+            { name: '怪盜基德', probabilities: [
+                {name: '白色披風', value: 50},
+                {name: '反派通用點', value: 20},
+                {name: '協助者通用點', value: 10},
+                {name: '搞笑通用點', value: 10},
+                {name: '偵探通用點', value: 10}
+            ]},
+            { name: '灰原哀', probabilities: [
+                {name: 'APTX4869藥物', value: 50},
+                {name: '反派通用點', value: 20},
+                {name: '協助者通用點', value: 10},
+                {name: '搞笑通用點', value: 10},
+                {name: '偵探通用點', value: 10}
+            ]},
+            { name: '毛利小五郎', probabilities: [
+                {name: '菸斗', value: 50},
+                {name: '搞笑通用點', value: 20},
+                {name: '偵探通用點', value: 10},
+                {name: '反派通用點', value: 10},
+                {name: '協助者通用點', value: 10}
+            ]},
+            { name: '鈴木園子', probabilities: [
+                {name: '財富的力量', value: 50},
+                {name: '搞笑通用點', value: 20},
+                {name: '偵探通用點', value: 10},
+                {name: '反派通用點', value: 10},
+                {name: '協助者通用點', value: 10}
+            ]},
+
             // Add similar structures for other options...
         ];
 
